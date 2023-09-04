@@ -1,7 +1,9 @@
 ---
 title: "ReadR_Parsing"
-output: html_document
-date: '2022-08-15'
+date: '2023-09-05'
+format:
+  html:
+    embed-resources: true
 ---
 
 This file is greatly based on the material prepared by Julian Langer and Lachlan Deer for the programming course for previous years
@@ -177,14 +179,9 @@ There is not much to say here apart from the fact that the `RDS` file 'remembers
 
 ## Reading in Excel sheets and Stata data with `readxl` and `haven` 
 Many datasets are stored in Excel sheets. You can read them in using the `readxl` package. A similar package, `haven`, exists for Stata files. I will not use them here, but can look at the helpfiles for the commands `read_excel` and `read_dta`. 
-```{r}
+```{.r}
 library(readxl)
 help(read_excel)
-```
-
-```{r, message = FALSE}
-library(haven)
-help(read_dta)
 ```
 
 If you want to try them out, you can use the data files from the 'Baby-Wooldridge' here: http://www.cengage.com/aise/economics/wooldridge_3e_datasets/. 
