@@ -1,8 +1,9 @@
 ---
 title: "Regression"
-output: html_document
-date: '2022-08-30'
-
+date: '2023-09-06'
+format:
+  html:
+    embed-resources: true
 ---
 
 Note: This file is greatly based on the material prepared by Julian Langer and Lachlan Deer for the programming course for previous years
@@ -20,9 +21,9 @@ library(vtable) # summary table
 
 ### Import data
 
-We will replicate some regressions in this paper: https://www.aeaweb.org/articles?id=10.1257/aer.98.3.808
+We will replicate some regressions in [this paper](https://www.aeaweb.org/articles?id=10.1257/aer.98.3.808).
 ```{r}
-ajry_df = read_xls("ajry.xls", sheet = 2) %>% 
+ajry_df = read_xls("../Datasets/ajry.xls", sheet = 2) %>% 
   arrange(code_numeric, year_numeric) %>% 
   rename(log_gdp_pc = lrgdpch,
          freedom_house = fhpolrigaug)
