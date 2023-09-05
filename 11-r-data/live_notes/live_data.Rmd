@@ -1,0 +1,269 @@
+---
+title: "R Data Manipulation - Live Notes"
+format:
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(dplyr)
+library(tibble)
+```
+
+```{r}
+rm(list = ls())
+```
+
+```{r}
+library(Ecdat)
+data("PatentsRD")
+patents <- as_tibble(PatentsRD)
+
+```
+
+```{r}
+class(patents[1:10, 1])
+class(PatentsRD[1:10, 1])
+```
+
+```{r}
+class(PatentsRD)
+class(patents)
+```
+
+```{r}
+unique(patents$fi)
+# Select all rows where fi is 42
+# Old-school way:
+patients[patents$fi == 42,]
+PatentsRD[PatentsRD$fi == 42,]
+
+filter(patents, fi == 42)
+```
+
+```{r}
+library(magrittr)
+log(exp(10))
+
+exp(10)
+10 %>% exp()
+10 %>%
+  exp() %>%
+  log()
+
+10 %>% log
+
+log(100, 10)
+100 %>% log(., 10)
+100 %>% log(10)
+100 %>% (function (x) {log(x, 10)})
+```
+
+```{r}
+filter(patents, fi == 42)
+patents %>% filter(fi == 42)
+patents_42 <- patents %>% filter(fi == 42)
+patents %>% filter(fi < 50 & fi > 40)
+patents %>% filter(fi < 50, fi > 40)
+```
+
+```{r}
+select(patents, fi)
+patents %>% select(fi)
+patents %>% select(fi, patent)
+patents %>% select(starts_with("p"))
+
+patents %>% select(fi : patent)
+patents %>% select(!patent)
+
+cols <- c("fi", "sector")
+patents %>% select(cols)
+```
+
+```{r}
+patents
+# Select cols year and sector where fi is between 40 and 50
+patents %>%
+    filter(fi > 40, fi < 50) %>%
+    select(year, sector)
+
+patents %>%
+    select(year, sector) %>%
+    filter(fi > 40, fi < 50)
+```
+
+```{r}
+patents %>%
+    arrange(year, sector, -patent)
+```
+
+```{r}
+patents %>%
+    mutate(
+        pt_rd = rdexp / patent,
+        what = sector + pt_rd,
+    )
+
+patents %>%
+    mutate(rdexp = case_when(
+        year == 1983 ~ rdexp * 1000,
+        year == 1984 ~ rdexp / 1000,
+        TRUE ~ rdexp
+    )) %>%
+    select(rdexp)
+
+patents %>%
+    transmute(rdexp = case_when(
+        year == 1983 ~ rdexp * 1000,
+        year == 1984 ~ rdexp / 1000,
+        TRUE ~ rdexp
+    ))
+```
+
+```{r}
+patents %>%
+    summarize(
+        min_rd = min(rdexp),
+        max_rd = max(rdexp)
+    )
+```
+
+```{r}
+patents %>%
+    group_by(year, sector) %>%
+    summarize(
+        min_rd = min(rdexp),
+        max_rd = max(rdexp)
+    )
+```
+
+```{r}
+patents %>%
+    group_by(year, sector) %>%
+    mutate(
+        min_rd = min(rdexp),
+        max_rd = max(rdexp)
+    )
+
+patents_demeaned <- patents %>%
+    group_by(year) %>%
+    mutate(rdex_demeaned = rdexp - mean(rdexp)) %>%
+    ungroup()
+
+patents_demeaned %>%
+    group_by(year) %>%
+    summarize(mean(rdex_demeaned))
+```
+
+```{r}
+patents %>%
+    select(year, rd = rdexp)
+```
+
+```{r}
+patents %>%
+    rename(rd = rdexp)
+```
+
+```{r}
+res <- patents %>%
+    group_by(year, sector) %>%
+    summarize(
+        min_rd = min(rdexp),
+        max_rd = max(rdexp)
+    ) %>%
+    ungroup() %>%
+    pull(min_rd)  # selects a vector
+```
+
+```{r}
+# Calculate mean r&d expenditure by year, but return result as a named vec
+temp <- patents %>% 
+  group_by(year) %>% 
+  summarize(mean_rd = mean(rdexp)) %>% 
+  pull(mean_rd, year)
+
+temp
+```
+
+```{r}
+first_df = tibble(
+  country = c('Afghanistan', 'Afghanistan', 'Belgium', 'China', 'Denmark'),
+  population = c(33369945, 33369946, 11371928, 1382323332, 5690750)
+)
+# gdp in millions
+second_df = tibble(
+  place = c('Afghanistan', 'Belgium', 'Denmark', 'Germany'),
+  gdp = c(35145, 422809, 211916, 3232545)
+)
+```
+
+## Joins you actually want to use:
+```{r}
+inner_join(first_df, second_df, by = c("country" = "place"))
+left_join(first_df, second_df, by = c("country" = "place"))
+right_join(first_df, second_df, by = c("country" = "place"))
+full_join(first_df, second_df, by = c("country" = "place"))
+```
+
+## Occasionally useful weird stuff:
+```{r}
+semi_join(first_df, second_df, by = c("country" = "place"))
+anti_join(first_df, second_df, by = c("country" = "place"))
+```
+
+```{r}
+full_join(
+    first_df %>% mutate(in_x = TRUE),
+    second_df %>% mutate(in_y = TRUE),
+    by = c("country" = "place"),
+)
+```
+
+
+# Reshaping data
+
+```{r}
+library(tidyr)
+dirty <- table4a %>%
+    rename(gdp_1999 = `1999`, gdp_2000 = `2000`) %>%
+    mutate(
+        continent_1999 = c("Asia", "South America", "Asia"),
+        continent_2000 = c("Asia", "Europe", "Asia")
+    )
+
+pivot_longer(
+    dirty,
+    cols = starts_with("year_"),
+    names_to = "year",
+    values_to = "gdp",
+    names_prefix = "year_"
+)
+```
+
+Reformat it into a long database with columns:
+ - country
+ - year
+ - continent
+ - gdp
+6 observations
+
+
+```{r}
+
+unpivot <- function(df, prefix) {
+    df %>%
+        select(country, starts_with(prefix)) %>%
+        pivot_longer(
+            cols = starts_with(prefix),
+            names_to = "date",
+            values_to = prefix,
+            names_prefix = paste0(prefix, "_")
+        )
+}
+
+inner_join(
+    unpivot(dirty, "gdp"),
+    unpivot(dirty, "continent")
+)
+```

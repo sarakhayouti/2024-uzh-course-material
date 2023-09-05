@@ -1,0 +1,64 @@
+---
+title: "R Data Importing - Live Notes"
+format:
+  html:
+    embed-resources: true
+---
+
+```{r, setup=TRUE}
+library(readr)
+setwd("/home/martin/pp4rs/2023/2023-uzh-course-material/11-r-data")
+getwd()
+```
+
+```{r}
+df_old <- read.csv("Datasets/adh_data.csv")
+head(df_old)
+```
+
+```{r}
+df_adh <- read_csv("Datasets/adh_data.csv")
+df_adh
+```
+
+
+```{r}
+vec <- c("true", "false", "true", "T", "FALSE")
+parse_logical(vec)
+
+vec_num <- c("1", "2", "3", "4", "5")
+parse_integer(vec_num)
+```
+
+```{r}
+challenge1 <- read_csv(
+    readr_example("challenge.csv"),
+    col_types = cols(
+        x = col_double(),
+        y = col_date()
+    )
+)
+tail(challenge1)
+```
+
+```{r}
+format(challenge1$y, "%d/%m/%Y")
+```
+
+```{r}
+write_csv(challenge1, "./my_challenge.csv")
+```
+
+```{r}
+library(readxl)
+excel_data <- read_excel(
+    "Datasets/Book1.xlsx",
+    sheet = "actual_data",
+    range = "A1:C5"
+)
+
+excel_data$y <- parse_date(excel_data$y, format = "%d/%m/%Y")
+
+excel_data
+```
+

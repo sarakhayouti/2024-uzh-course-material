@@ -1,0 +1,64 @@
+---
+title: "R Plotting - Live Notes"
+format:
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(tibble)
+library(ggplot2)
+```
+
+```{r}
+ggplot(diamonds) +
+    geom_point(
+        aes(x = carat, y = price, color = cut),
+        alpha = 0.2,
+    )
+```
+
+Faceting
+```{r}
+ggplot(diamonds) +
+    geom_point(
+        aes(x = carat, y = price),
+        alpha = 0.2,
+    ) +
+    facet_wrap(~ cut, nrow = 1)
+```
+
+```{r}
+ggplot(diamonds) +
+    geom_point(
+        aes(x = carat, y = price),
+        alpha = 0.2,
+    ) +
+    facet_grid(cut ~ clarity)
+```
+
+```{r}
+my_plot <- ggplot(diamonds, mapping = aes(x = carat, y = price)) +
+    labs(
+        x = "Weight (carat)",
+        y = "Price (perhaps USD?)",
+        color = "Clarity",
+        title = "How diamond prices are determined"
+    ) +
+    xlim(0, 2.5) +
+    scale_y_continuous(
+        breaks = seq(0, 20000, by = 2500),
+        labels = function(x) {paste0("USD ", x / 1000, "k")}
+    ) +
+    scale_color_brewer(palette = "OrRd") +
+    theme_classic()
+```
+
+```{r}
+ggsave("my_fancy_plot.png", my_plot, width = 5, height = 3, dpi = 300)
+```
+
+```{r}
+ggplot(diamonds) +
+    geom_density(aes(x = carat, color = cut))
+```
