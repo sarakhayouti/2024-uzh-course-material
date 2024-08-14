@@ -4,14 +4,16 @@
 
 * Course Instructors:
   * Julius Schäper (@jfschaeper)
+  * Frederik Bennhoff (@FredHB)
+  * Sára Khayouti (@sarakhayouti)
 
 * Teaching Assistants:
-  * 
+  * Justinas Grigaitis (@justgri)
 
 ## Important Links:
 
 * Course website:
-    * [pp4rs.github.io/](https://pp4rs.github.io/2022-uzh)
+    * [pp4rs.github.io/](https://pp4rs.github.io/)
 * Installation Guide:
     * [pp4rs.github.io/installation-guide](https://pp4rs.github.io/install_guide/)
 * Course Chatter:
