@@ -24,7 +24,7 @@ Additional functionalities are available in R packages. To install these you hav
 ```{r}
 rm(list = ls())
 #install.packages('dplyr')
-library(dplyr)
+library(dplyr) 
 ```
 
 **Shortcuts**
